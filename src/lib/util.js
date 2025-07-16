@@ -10,7 +10,7 @@ export const generateToken = async (userId, res) => {
     httpOnly: true,
     secure: true, // ⚠️ Bắt buộc nếu domain dùng HTTPS
     sameSite: "None",     // ⚠️ Bắt buộc để cookie hoạt động cross-domain
-    process: process.env.NODE_ENV || "development",
+    // process: process.env.NODE_ENV || "development",
   });
   return token;
 };
