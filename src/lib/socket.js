@@ -9,7 +9,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "https://chat-app-vite-js-fe-mongen2211s-projects.vercel.app/",
+    origin: "https://chat-app-vite-js-fe-mongen2211s-projects.vercel.app",
   },
 });
 
