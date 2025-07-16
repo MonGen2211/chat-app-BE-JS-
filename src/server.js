@@ -18,6 +18,7 @@ app.use(
     credentials: true,
   })
 );
+
 const PORT = process.env.PORT;
 
 app.use("/api/auth", authRoutes);
