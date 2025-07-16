@@ -8,6 +8,7 @@ export const generateToken = async (userId, res) => {
   res.cookie("jwt", token, {
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
+    secure: true, // ⚠️ Bắt buộc nếu domain dùng HTTPS
     sameSite: "None",     // ⚠️ Bắt buộc để cookie hoạt động cross-domain
     process: process.env.NODE_ENV || "development",
   });
