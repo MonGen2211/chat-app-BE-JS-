@@ -1,0 +1,65 @@
+[{
+  "_id": {
+    "$oid": "67e13014a87ac7c1f027e284"
+  },
+  "email": "gen22112002@gmail.com",
+  "fullname": "Gen",
+  "password": "$2b$10$T3NmGt1haFa5P8vPEIVjKepDnGPigyFowqJD317R16qS8OBDZm3X6",
+  "profilePic": "image.com",
+  "createdAt": {
+    "$date": "2025-03-24T10:12:36.393Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T03:47:04.059Z"
+  },
+  "__v": 0,
+  "profilefic": "https://res.cloudinary.com/djcjyfiwq/image/upload/v1743738423/yi1yseuqf6wdhwds7rbz.png"
+},
+{
+  "_id": {
+    "$oid": "67e13197f59bce1373de508a"
+  },
+  "email": "hosonvu02@gmail.com",
+  "fullname": "Gen",
+  "password": "$2b$10$p5TxJqWDm.tmG2sD3Semu.yk/qX6jeK9c4KenAf/vC1hctUvm81Ty",
+  "profilePic": "",
+  "createdAt": {
+    "$date": "2025-03-24T10:19:03.866Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-24T10:19:03.866Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f0de476cd428b5addd012d"
+  },
+  "fullname": "Gen",
+  "email": "1@gmail.com",
+  "password": "$2b$10$MMmaSGbz/KTB.Mqquwc6p.FFtsWlPP1xwvRzZinRCkXjtrYtVlS8O",
+  "profilefic": "https://res.cloudinary.com/djcjyfiwq/image/upload/v1743842303/okir33t39wtytcbntl0h.png",
+  "createdAt": {
+    "$date": "2025-04-05T07:39:51.965Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-05T08:38:23.479Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f0e7bc027d3b81a1e1d989"
+  },
+  "fullname": "Gen",
+  "email": "44@gmail.com",
+  "password": "$2b$10$oBKX11HD0ENmoZlYYTy5CenWI5SGxrlLFluCBkf2yQs6kA3umfFHa",
+  "profilefic": "",
+  "createdAt": {
+    "$date": "2025-04-05T08:20:12.224Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-05T08:20:12.224Z"
+  },
+  "__v": 0
+}]

@@ -1,0 +1,64 @@
+[{
+  "_id": {
+    "$oid": "67f0f3b2ca6f8c85195e9032"
+  },
+  "receiveId": "67e13014a87ac7c1f027e284",
+  "senderId": "67f0de476cd428b5addd012d",
+  "text": "",
+  "image": "U2FsdGVkX1/gZcCD3kS2YxdAYRwx/6bNC/LAD96CMBU=",
+  "createdAt": {
+    "$date": "2025-04-05T09:11:14.167Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-05T09:11:14.167Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f0f7fcb754c76463151c42"
+  },
+  "receiveId": "67e13014a87ac7c1f027e284",
+  "senderId": "67f0de476cd428b5addd012d",
+  "text": "U2FsdGVkX19wvI146/f6r4u1nE8V8ib1X7SxVQPia44=",
+  "image": "U2FsdGVkX19BvRG2raMlz8d6gKlt8dAtgg3tVjwfsF0=",
+  "createdAt": {
+    "$date": "2025-04-05T09:29:32.589Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-05T09:29:32.589Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f0f801b754c76463151c45"
+  },
+  "receiveId": "67e13014a87ac7c1f027e284",
+  "senderId": "67f0de476cd428b5addd012d",
+  "text": "U2FsdGVkX19QJZUFxVN24cVs1gly/l3RK73KLZtCigY=",
+  "image": "U2FsdGVkX1+mbG5usPULOBumcnk2O5S70fmtY8SLu5Y=",
+  "createdAt": {
+    "$date": "2025-04-05T09:29:37.953Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-05T09:29:37.953Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f0f807b754c76463151c48"
+  },
+  "receiveId": "67e13014a87ac7c1f027e284",
+  "senderId": "67f0de476cd428b5addd012d",
+  "text": "U2FsdGVkX19RYGQ/Z3IGoZEYwBK27WCNCjS5G+IGsh8=",
+  "image": "U2FsdGVkX1+EyaMs1j0QqrWCSZHde6KwVePudlYe8OA=",
+  "createdAt": {
+    "$date": "2025-04-05T09:29:43.754Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-05T09:29:43.754Z"
+  },
+  "__v": 0
+}]
