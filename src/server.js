@@ -16,6 +16,7 @@ app.use(cookieParser());
 const allowedOrigins = [
   "http://localhost:3000",
   "https://chat-app-vite-js-fe-mongen2211s-projects.vercel.app",
+	"https://chat-app-vite-js-m8xioyz3t-mongen2211s-projects.vercel.app",
 ];
 app.use(
   cors({
