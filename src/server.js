@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 
 import authRoutes from "./routes/user.route.js";
 import messageRoutes from "./routes/message.route.js";
+import groupRoutes from "./routes/group.route.js";
 import connectDb from "./lib/connectDb.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -12,9 +13,13 @@ dotenv.config();
 
 app.use(express.json());
 app.use(cookieParser());
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://chat-app-vite-js-fe-mongen2211s-projects.vercel.app",
+];
 app.use(
   cors({
-    origin: "https://chat-app-vite-js-fe-mongen2211s-projects.vercel.app",
+    origin: allowedOrigins,
     credentials: true,
   })
 );
@@ -23,6 +28,7 @@ const PORT = process.env.PORT;
 
 app.use("/api/auth", authRoutes);
 app.use("/api/message", messageRoutes);
+app.use("/api/group", groupRoutes);
 
 server.listen(PORT, () => {
   console.log(`🚀 File server running at http://localhost:${PORT}`);

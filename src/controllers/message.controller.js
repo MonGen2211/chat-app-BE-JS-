@@ -16,7 +16,7 @@ export const sendMessage = async (req, res) => {
     if (text) {
       hashText = cryptoJS.AES.encrypt(
         text,
-        process.env.JWT_SECRETKEY_CRYPTOJS
+        process.env.JWT_SECRETKEY_CRYPTOJS,
       ).toString();
     }
 
@@ -25,13 +25,14 @@ export const sendMessage = async (req, res) => {
       const imageUrl = uploadResponse.secure_url;
       hashImage = cryptoJS.AES.encrypt(
         imageUrl,
-        process.env.JWT_SECRETKEY_CRYPTOJS
+        process.env.JWT_SECRETKEY_CRYPTOJS,
       ).toString();
     }
 
     let newMessage = new Message({
       senderId,
       receiveId,
+      chatType: "direct",
       text: hashText || "",
       image: hashImage || "",
     });
@@ -71,12 +72,12 @@ export const getMessage = async (req, res) => {
       ...message._doc,
       text: cryptoJs.AES.decrypt(
         message.text,
-        process.env.JWT_SECRETKEY_CRYPTOJS
+        process.env.JWT_SECRETKEY_CRYPTOJS,
       ).toString(cryptoJs.enc.Utf8),
 
       image: cryptoJs.AES.decrypt(
         message.image,
-        process.env.JWT_SECRETKEY_CRYPTOJS
+        process.env.JWT_SECRETKEY_CRYPTOJS,
       ).toString(cryptoJs.enc.Utf8),
     }));
 
@@ -92,10 +93,57 @@ export const getUsers = async (req, res) => {
     const myId = req.user._id.toString();
 
     const users = await User.find({ _id: { $ne: myId } });
-
     res.status(200).json(users);
   } catch (error) {
     console.log("error in getMessages Controller: ", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const deleteMessage = async (req, res) => {
+  try {
+    const message_id = req.params.id;
+    const myId = req.user._id.toString();
+    const updated = await Message.findOneAndUpdate(
+      {
+        _id: message_id,
+        senderId: myId,
+        // softDeletedAt: null,
+      },
+      { $set: { softDeletedAt: new Date() } },
+      { new: true },
+    );
+    if (!updated) {
+      return res.status(403).json({
+        success: false,
+        message: "Không tìm thấy tin nhắn hoặc bạn không có quyền thu hồi",
+      });
+    }
+    if (updated.chatType === "group" && updated.groupId) {
+      io.to(updated.groupId.toString()).emit("deleteMessage", {
+        messageId: updated._id,
+        softDeletedAt: updated.softDeletedAt,
+      });
+    } else {
+      const receiverSocketId = getReceiverSocketId(updated.receiveId);
+      const senderSocketId = getReceiverSocketId(updated.senderId);
+      const targets = new Set([receiverSocketId, senderSocketId]);
+      for (const sid of targets) {
+        if (sid)
+          io.to(sid).emit("deleteMessage", {
+            messageId: updated._id,
+            softDeletedAt: updated.softDeletedAt,
+          });
+      }
+    }
+    // const receiveSoceketId = getReceiverSocketId(receiveId);
+    // if (receiveSoceketId) {
+    //   io.to(receiveSoceketId).emit("newMessage", newMessage);
+    // }
+
+    res.status(200).json({ message: "Delete Message Successfully" });
+  } catch (error) {
+    console.log("Error in sendMessage controller: ", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
