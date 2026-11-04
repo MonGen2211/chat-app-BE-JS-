@@ -12,6 +12,9 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
   "http://localhost:3001",
+  "https://chat-app-vite-js-fe.vercel.app",
+  "https://chat-app-vite-js-fe-git-main-mongen2211s-projects.vercel.app",
+  "https://chat-app-vite-js-dsrjcqx4r-mongen2211s-projects.vercel.app",
   "https://chat-app-vite-js-fe-mongen2211s-projects.vercel.app",
   "https://chat-app-vite-js-m8xioyz3t-mongen2211s-projects.vercel.app",
 ];
