@@ -2,10 +2,10 @@ import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
 export const protectedRoute = async (req, res, next) => {
   try {
-    const token = req.cookies.jwt;
+    const token = req.cookies?.jwt;
 
     if (!token) {
-      return res.status(400).json({ message: "You need to Login first" });
+      return res.status(401).json({ message: "You need to login first" });
     }
 
     // check verify
@@ -20,7 +20,10 @@ export const protectedRoute = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    console.log("error in check Controller: ", error);
+    if (error.name === "JsonWebTokenError" || error.name === "TokenExpiredError") {
+      return res.status(401).json({ message: "Invalid or expired token" });
+    }
+    console.error("Authentication middleware failed:", error.message);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };

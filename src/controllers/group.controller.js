@@ -7,6 +7,9 @@ export const createGroup = async (req, res) => {
   try {
     const myId = req.user._id.toString();
     const { member_ids, name, avatar } = req.body;
+    if (!name?.trim() || !Array.isArray(member_ids)) {
+      return res.status(422).json({ message: "Group name and member_ids are required" });
+    }
 
     const newGroup = new Group({
       name,
@@ -53,9 +56,17 @@ export const sendMessageGroup = async (req, res) => {
 		const { text, image } = req.body;
 		const groupId = req.params.id;
 		const senderId = req.user._id.toString();
+		const group = await Group.findById(groupId);
+		if (!group || (!group.members.includes(senderId) && !group.admins.includes(senderId) && group.createdBy !== senderId)) {
+			return res.status(403).json({ message: "You are not a member of this group" });
+		}
+		if (!text && !image) {
+			return res.status(422).json({ message: "Message text or image is required" });
+		}
 
 		let hashText = "";
 		let hashImage = "";
+		let imageUrl = "";
 		if (text) {
 			hashText = cryptoJS.AES.encrypt(
 				text,
@@ -65,7 +76,7 @@ export const sendMessageGroup = async (req, res) => {
 
 		if (image) {
 			const uploadResponse = await cloudinary.uploader.upload(image);
-			const imageUrl = uploadResponse.secure_url;
+			imageUrl = uploadResponse.secure_url;
 			hashImage = cryptoJS.AES.encrypt(
 				imageUrl,
 				process.env.JWT_SECRETKEY_CRYPTOJS,
@@ -82,10 +93,8 @@ export const sendMessageGroup = async (req, res) => {
 
 		await newMessage.save();
 
-		newMessage.text = text;
-		newMessage.image = image;
-const size = io.sockets.adapter.rooms.get(groupId)?.size || 0;
-console.log("ROOM SIZE:", groupId, size);
+		newMessage.text = text || "";
+		newMessage.image = imageUrl;
 
     io.to(groupId).emit("newMessage", newMessage);
 
@@ -100,22 +109,24 @@ export const getMessageGroup = async (req, res) => {
 	try {
 		const groupId = req.params.id;
 		const senderId = req.user._id.toString();
+		const group = await Group.findById(groupId);
+		if (!group || (!group.members.includes(senderId) && !group.admins.includes(senderId) && group.createdBy !== senderId)) {
+			return res.status(403).json({ message: "You are not a member of this group" });
+		}
 
 		const messages = await Message.find({
-				groupId: String(groupId)
+				groupId,
+				softDeletedAt: null,
+		}).sort({ createdAt: 1 });
+		const decodeMessages = messages.map((message) => {
+			const data = message.toObject();
+			if (data.type === "call") return data;
+			return {
+				...data,
+				text: cryptoJS.AES.decrypt(data.text, process.env.JWT_SECRETKEY_CRYPTOJS).toString(cryptoJS.enc.Utf8),
+				image: cryptoJS.AES.decrypt(data.image, process.env.JWT_SECRETKEY_CRYPTOJS).toString(cryptoJS.enc.Utf8),
+			};
 		});
-		const decodeMessages = messages.map((message) => ({
-			...message._doc,
-			text: cryptoJS.AES.decrypt(
-				message.text,
-				process.env.JWT_SECRETKEY_CRYPTOJS,
-			).toString(cryptoJS.enc.Utf8),
-
-			image: cryptoJS.AES.decrypt(
-				message.image,
-				process.env.JWT_SECRETKEY_CRYPTOJS,
-			).toString(cryptoJS.enc.Utf8),
-		}));
 
 		res.status(200).json(decodeMessages);
 	} catch (error) {

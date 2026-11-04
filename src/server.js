@@ -15,9 +15,11 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(cookieParser());
 const allowedOrigins = [
+  "http://localhost:5173",
   "http://localhost:3000",
+  "http://localhost:3001",
   "https://chat-app-vite-js-fe-mongen2211s-projects.vercel.app",
-	"https://chat-app-vite-js-m8xioyz3t-mongen2211s-projects.vercel.app",
+  "https://chat-app-vite-js-m8xioyz3t-mongen2211s-projects.vercel.app",
 ];
 app.use(
   cors({
@@ -26,13 +28,22 @@ app.use(
   })
 );
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 2221;
 
 app.use("/api/auth", authRoutes);
 app.use("/api/message", messageRoutes);
 app.use("/api/group", groupRoutes);
 
-server.listen(PORT, () => {
-  console.log(`🚀 File server running at http://localhost:${PORT}`);
-  connectDb();
-});
+const startServer = async () => {
+  try {
+    await connectDb();
+    server.listen(PORT, () => {
+      console.log(`Server running at http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("Database connection failed:", error.message);
+    process.exitCode = 1;
+  }
+};
+
+startServer();

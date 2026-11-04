@@ -10,9 +10,17 @@ export const sendMessage = async (req, res) => {
     const { text, image } = req.body;
     const receiveId = req.params.id;
     const senderId = req.user._id.toString();
+    if (!text && !image) {
+      return res.status(422).json({ message: "Message text or image is required" });
+    }
+    const recipient = await User.findById(receiveId).select("_id");
+    if (!recipient) {
+      return res.status(404).json({ message: "Recipient not found" });
+    }
 
     let hashText = "";
     let hashImage = "";
+    let imageUrl = "";
     if (text) {
       hashText = cryptoJS.AES.encrypt(
         text,
@@ -22,7 +30,7 @@ export const sendMessage = async (req, res) => {
 
     if (image) {
       const uploadResponse = await cloudinary.uploader.upload(image);
-      const imageUrl = uploadResponse.secure_url;
+      imageUrl = uploadResponse.secure_url;
       hashImage = cryptoJS.AES.encrypt(
         imageUrl,
         process.env.JWT_SECRETKEY_CRYPTOJS,
@@ -39,13 +47,12 @@ export const sendMessage = async (req, res) => {
 
     await newMessage.save();
 
-    newMessage.text = text;
-    newMessage.image = image;
+    newMessage.text = text || "";
+    newMessage.image = imageUrl;
 
-    const receiveSoceketId = getReceiverSocketId(receiveId);
-    if (receiveSoceketId) {
-      io.to(receiveSoceketId).emit("newMessage", newMessage);
-    }
+    io.to(getReceiverSocketId(receiveId))
+      .to(getReceiverSocketId(senderId))
+      .emit("newMessage", newMessage);
 
     res.status(200).json({ message: "SendMessage Successfully", newMessage });
   } catch (error) {
@@ -60,26 +67,24 @@ export const getMessage = async (req, res) => {
     const senderId = req.user._id.toString();
 
     const messages = await Message.find({
+      softDeletedAt: null,
       $or: [
         // message: me => you
         { senderId: senderId, receiveId: receiveId },
         // message: you => me
         { senderId: receiveId, receiveId: senderId },
       ],
+    }).sort({ createdAt: 1 });
+
+    const decodeMessages = messages.map((message) => {
+      const data = message.toObject();
+      if (data.type === "call") return data;
+      return {
+        ...data,
+        text: cryptoJs.AES.decrypt(data.text, process.env.JWT_SECRETKEY_CRYPTOJS).toString(cryptoJs.enc.Utf8),
+        image: cryptoJs.AES.decrypt(data.image, process.env.JWT_SECRETKEY_CRYPTOJS).toString(cryptoJs.enc.Utf8),
+      };
     });
-
-    const decodeMessages = messages.map((message) => ({
-      ...message._doc,
-      text: cryptoJs.AES.decrypt(
-        message.text,
-        process.env.JWT_SECRETKEY_CRYPTOJS,
-      ).toString(cryptoJs.enc.Utf8),
-
-      image: cryptoJs.AES.decrypt(
-        message.image,
-        process.env.JWT_SECRETKEY_CRYPTOJS,
-      ).toString(cryptoJs.enc.Utf8),
-    }));
 
     res.status(200).json(decodeMessages);
   } catch (error) {
@@ -92,7 +97,7 @@ export const getUsers = async (req, res) => {
   try {
     const myId = req.user._id.toString();
 
-    const users = await User.find({ _id: { $ne: myId } });
+    const users = await User.find({ _id: { $ne: myId } }).select("-password");
     res.status(200).json(users);
   } catch (error) {
     console.log("error in getMessages Controller: ", error);
@@ -108,7 +113,7 @@ export const deleteMessage = async (req, res) => {
       {
         _id: message_id,
         senderId: myId,
-        // softDeletedAt: null,
+        softDeletedAt: null,
       },
       { $set: { softDeletedAt: new Date() } },
       { new: true },

@@ -1,12 +1,13 @@
 import mongoose from "mongoose";
+import dns from "node:dns";
 
-const connectDb = async (req, res) => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI);
-    console.log("kết nối database thành công");
-  } catch (error) {
-    console.log("kết nối database thất bại", error);
-  }
+// Use public DNS resolvers because the configured resolver refused SRV lookups.
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
+
+const connectDb = async () => {
+  const conn = await mongoose.connect(process.env.MONGODB_URI);
+  console.log(`Database connected: ${conn.connection.name}`);
+  return conn;
 };
 
 export default connectDb;
